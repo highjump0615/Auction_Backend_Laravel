@@ -3,8 +3,10 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateUserTable extends Migration
 {
+    public static $tableName = 'plh_user';
+
     /**
      * Run the migrations.
      *
@@ -12,12 +14,19 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create(CreateUserTable::$tableName, function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
             $table->rememberToken();
+
+            // profile info
+            $table->string('photo')->comment('profile portrait url');
+            $table->date('birthday');
+            $table->tinyInteger('gender')->comment('1:Unknown, 2:Female, 3:Male');
+
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -29,6 +38,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('users');
+        Schema::drop(CreateUserTable::$tableName);
     }
 }
