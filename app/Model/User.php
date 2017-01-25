@@ -1,18 +1,29 @@
 <?php
 
-namespace App;
+namespace App\Model;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
+    protected $table = 'plh_user';
+
+    use softDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'username',
+        'email',
+        'password',
+        'photo',
+        'birthday',
+        'gender',
     ];
 
     /**

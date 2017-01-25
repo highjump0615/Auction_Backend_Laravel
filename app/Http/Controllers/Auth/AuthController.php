@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Model\User;
+use Illuminate\Http\Request;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
@@ -50,8 +51,9 @@ class AuthController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'username' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:' . \CreateUserTable::$tableName,
+            'password' => 'required',
         ]);
     }
 
@@ -65,8 +67,27 @@ class AuthController extends Controller
     {
         return User::create([
             'name' => $data['name'],
+            'username' => $data['username'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
+            'birthday' => $data['birthday'],
+            'gender' => $data['gender'],
         ]);
+    }
+
+    /**
+     * Redefined for signup api
+     * @param Request $request
+     * @return User
+     */
+    public function register(Request $request)
+    {
+        $validator = $this->validator($request->all());
+
+        if ($validator->fails()) {
+            abort(422, $validator->errors());
+        }
+
+        return $this->create($request->all());
     }
 }
