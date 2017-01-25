@@ -85,7 +85,7 @@ class AuthController extends Controller
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
-            abort(422, $validator->errors());
+            abort(400, $validator->errors());
         }
 
         return $this->create($request->all());
