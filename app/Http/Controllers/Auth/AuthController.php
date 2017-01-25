@@ -91,7 +91,7 @@ class AuthController extends Controller
 
         if ($validator->fails()) {
             $error = json_decode($validator->errors());
-            return response()->json($error, 400);
+            return response()->json($error, softFailStatus());
         }
 
         return $this->create($request->all());
@@ -113,6 +113,6 @@ class AuthController extends Controller
             return $guard->user();
         }
 
-        return response()->json(null, 400);
+        return response()->json(null, softFailStatus());
     }
 }
