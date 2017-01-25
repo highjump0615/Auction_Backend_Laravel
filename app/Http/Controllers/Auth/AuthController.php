@@ -10,7 +10,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 
-use Illuminate\Support\Facades\Auth;
+use Auth;
+use File;
 
 class AuthController extends Controller
 {
@@ -70,14 +71,35 @@ class AuthController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'username' => $data['username'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'birthday' => $data['birthday'],
-            'gender' => $data['gender'],
-        ]);
+        $aryParam = [
+            'name'      => $data['name'],
+            'username'  => $data['username'],
+            'email'     => $data['email'],
+            'password'  => bcrypt($data['password']),
+            'birthday'  => $data['birthday'],
+            'gender'    => $data['gender'],
+        ];
+
+        // if photo file exists, save file first
+        if (array_has($data, 'photo')) {
+            $filePhoto = $data['photo'];
+
+            // create user photo directory, if not exist
+            if (!file_exists(getUserPhotoPath())) {
+                File::makeDirectory(getUserPhotoPath(), 0777, true);
+            }
+
+            // generate file name u**********.ext
+            $strName = 'u' . time() . uniqid() . '.' . $filePhoto->getClientOriginalExtension();
+
+            // move file to upload folder
+            $filePhoto->move(getUserPhotoPath(), $strName);
+
+            // add to database
+            $aryParam['photo'] = $strName;
+        }
+
+        return User::create($aryParam);
     }
 
     /**
@@ -89,6 +111,7 @@ class AuthController extends Controller
     {
         $validator = $this->validator($request->all());
 
+        // failed validation
         if ($validator->fails()) {
             $error = json_decode($validator->errors());
             return response()->json($error, softFailStatus());

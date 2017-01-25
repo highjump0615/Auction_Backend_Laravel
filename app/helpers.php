@@ -13,3 +13,11 @@
 function softFailStatus() {
     return 400;
 }
+
+/**
+ * get user photo image path
+ * @return string
+ */
+function getUserPhotoPath() {
+    return public_path('uploads/user/');
+}
