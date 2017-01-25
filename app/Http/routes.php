@@ -20,4 +20,5 @@ Route::group(['middleware' => ['web']], function() {
 Route::group(['prefix'=>'api/v1', 'middleware' => ['api']], function() {
     // user
     Route::post('/signup', 'Auth\AuthController@register');
+    Route::post('/login', 'Auth\AuthController@login');
 });

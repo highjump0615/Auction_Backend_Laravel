@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Model\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
+
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -31,6 +34,8 @@ class AuthController extends Controller
      */
     protected $redirectTo = '/';
 
+    protected $username = 'username';
+
     /**
      * Create a new authentication controller instance.
      *
@@ -51,7 +56,7 @@ class AuthController extends Controller
     {
         return Validator::make($data, [
             'name' => 'required|max:255',
-            'username' => 'required|max:255',
+            'username' => 'required|max:255|unique:' . \CreateUserTable::$tableName,
             'email' => 'required|email|max:255|unique:' . \CreateUserTable::$tableName,
             'password' => 'required',
         ]);
@@ -85,9 +90,29 @@ class AuthController extends Controller
         $validator = $this->validator($request->all());
 
         if ($validator->fails()) {
-            abort(400, $validator->errors());
+            $error = json_decode($validator->errors());
+            return response()->json($error, 400);
         }
 
         return $this->create($request->all());
+    }
+
+    /**
+     * Redefined for login api
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function login(Request $request)
+    {
+        $credentials = $this->getCredentials($request);
+
+        // SessionGuard, why??
+        $guard = Auth::guard($this->getGuard());
+
+        if ($guard->attempt($credentials, $request->has('remember'))) {
+            return $guard->user();
+        }
+
+        return response()->json(null, 400);
     }
 }
