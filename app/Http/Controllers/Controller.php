@@ -8,7 +8,18 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesResources;
 
+use Auth;
+
 class Controller extends BaseController
 {
     use AuthorizesRequests, AuthorizesResources, DispatchesJobs, ValidatesRequests;
+
+    /**
+     * get current user from api token
+     * @return mixed
+     */
+    protected function getCurrentUser() {
+        return Auth::guard('api')->user();
+    }
+
 }

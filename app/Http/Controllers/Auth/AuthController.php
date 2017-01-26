@@ -35,6 +35,7 @@ class AuthController extends Controller
      */
     protected $redirectTo = '/';
 
+    // username will be key, instead of email
     protected $username = 'username';
 
     /**
@@ -64,6 +65,15 @@ class AuthController extends Controller
     }
 
     /**
+     * generate api token for api
+     * @return string
+     */
+    protected function createApiToken()
+    {
+        return str_random(60);
+    }
+
+    /**
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
@@ -78,6 +88,7 @@ class AuthController extends Controller
             'password'  => bcrypt($data['password']),
             'birthday'  => $data['birthday'],
             'gender'    => $data['gender'],
+            'api_token' => $this->createApiToken(),
         ];
 
         // if photo file exists, save file first
@@ -129,10 +140,11 @@ class AuthController extends Controller
     {
         $credentials = $this->getCredentials($request);
 
-        // SessionGuard, why??
-        $guard = Auth::guard($this->getGuard());
+        // only web guard can validate with credentials
+        $guard = Auth::guard('web');
 
         if ($guard->attempt($credentials, $request->has('remember'))) {
+            // maybe you can generate api_token again here
             return $guard->user();
         }
 

@@ -21,9 +21,10 @@ class CreateUserTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->rememberToken();
+            $table->string('api_token', 60)->nullable();
 
             // profile info
-            $table->string('photo')->comment('profile portrait url');
+            $table->string('photo')->nullable()->comment('profile portrait url');
             $table->date('birthday');
             $table->tinyInteger('gender')->comment('1:Unknown, 2:Female, 3:Male');
 

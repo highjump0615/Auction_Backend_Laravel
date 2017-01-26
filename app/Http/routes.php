@@ -17,8 +17,16 @@ Route::group(['middleware' => ['web']], function() {
     });
 });
 
-Route::group(['prefix'=>'api/v1', 'middleware' => ['api']], function() {
-    // user
-    Route::post('/signup', 'Auth\AuthController@register');
-    Route::post('/login', 'Auth\AuthController@login');
+Route::group(['prefix'=>'api/v1'], function() {
+
+    Route::group(['middleware' => ['api']], function() {
+        // user
+        Route::post('/signup', 'Auth\AuthController@register');
+        Route::post('/login', 'Auth\AuthController@login');
+    });
+
+    Route::group(['middleware' => ['auth:api']], function() {
+        // item
+        Route::get('/uploaditem', 'ItemController@upload');
+    });
 });
