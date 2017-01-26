@@ -24,6 +24,12 @@ class CreateItemTable extends Migration
             $table->tinyInteger('condition');
             $table->tinyInteger('status')->comment('0:bid, 1:auction, 2:closed');
 
+            // image
+            $table->string('image0')->nullable();
+            $table->string('image1')->nullable();
+            $table->string('image2')->nullable();
+            $table->string('image3')->nullable();
+
             // time
             $table->dateTime('end_at');
             $table->timestamps();

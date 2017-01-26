@@ -21,3 +21,11 @@ function softFailStatus() {
 function getUserPhotoPath() {
     return public_path('uploads/user/');
 }
+
+/**
+ * get item photo image path
+ * @return string
+ */
+function getItemImagePath() {
+    return public_path('uploads/item/');
+}
