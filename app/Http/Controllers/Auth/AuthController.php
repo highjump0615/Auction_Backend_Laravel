@@ -86,10 +86,18 @@ class AuthController extends Controller
             'username'  => $data['username'],
             'email'     => $data['email'],
             'password'  => bcrypt($data['password']),
-            'birthday'  => $data['birthday'],
-            'gender'    => $data['gender'],
             'api_token' => $this->createApiToken(),
         ];
+
+        //
+        // check existance
+        //
+        if (array_has($data, 'birthday')) {
+            $aryParam['birthday'] = $data['birthday'];
+        }
+        if (array_has($data, 'gender')) {
+            $aryParam['gender'] = $data['gender'];
+        }
 
         // if photo file exists, save file first
         if (array_has($data, 'photo')) {

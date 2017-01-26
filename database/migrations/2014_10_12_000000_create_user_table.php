@@ -25,7 +25,7 @@ class CreateUserTable extends Migration
 
             // profile info
             $table->string('photo')->nullable()->comment('profile portrait url');
-            $table->date('birthday');
+            $table->date('birthday')->nullable();
             $table->tinyInteger('gender')->comment('1:Unknown, 2:Female, 3:Male');
 
             $table->softDeletes();

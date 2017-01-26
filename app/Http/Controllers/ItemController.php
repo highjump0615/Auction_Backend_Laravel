@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Item;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use DateTime;
@@ -11,6 +12,11 @@ use File;
 
 class ItemController extends Controller
 {
+    /**
+     * upload a new item
+     * @param Request $request
+     * @return item
+     */
     public function upload(Request $request) {
 
         $user = $this->getCurrentUser();
@@ -60,5 +66,57 @@ class ItemController extends Controller
         $itemNew = Item::create($aryParam);
 
         return $itemNew;
+    }
+
+    /**
+     * explore api; get random 10 items
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function getExplore(Request $request) {
+        // get max id of item
+        $nMaxId = Item::max('id');
+
+        // sort randomly
+        $aryId = array();
+        for ($i = 1; $i <= $nMaxId; $i++) {
+            array_push($aryId, $i);
+        }
+        shuffle($aryId);
+
+        // query first 10 item with id array above
+        $items = Item::whereIn('id', $aryId)
+            ->where('status', Item::STATUS_BID)
+            ->limit(10)
+            ->get();
+
+        return $items;
+    }
+
+    /**
+     * category api; get items in the category
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getCategory(Request $request, $id) {
+        // query all items of category
+        $items = Item::where('category', $id)->get();
+
+        return $items;
+    }
+
+    /**
+     * get items with keyword in title
+     * @param Request $request
+     * @param $keyword
+     * @return mixed
+     */
+    public function getSearch(Request $request, $keyword) {
+        // query items with keyword in title
+        $items = Item::where('title', 'like', '%' . $keyword . '%')->get();
+
+        return $items;
     }
 }

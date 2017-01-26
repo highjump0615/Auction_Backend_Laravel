@@ -28,5 +28,8 @@ Route::group(['prefix'=>'api/v1'], function() {
     Route::group(['middleware' => ['auth:api']], function() {
         // item
         Route::post('/uploaditem', 'ItemController@upload');
+        Route::get('/explore', 'ItemController@getExplore');
+        Route::get('/category/{id}', 'ItemController@getCategory');
+        Route::get('/search/{keyword}', 'ItemController@getSearch');
     });
 });
