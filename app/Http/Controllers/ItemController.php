@@ -75,8 +75,15 @@ class ItemController extends Controller
      * @return mixed
      */
     public function getExplore(Request $request) {
+        $nMaxCount = 10;
+
         // get max id of item
-        $nMaxId = Item::max('id');
+        $nMaxId = Item::where('status', Item::STATUS_BID)->max('id');
+
+        // if no data
+        if (empty($nMaxId)) {
+            return new JsonResponse();
+        }
 
         // sort randomly
         $aryId = array();
@@ -85,10 +92,22 @@ class ItemController extends Controller
         }
         shuffle($aryId);
 
+        // order by condition
+        $strIdList = '';
+        $nCount = min(count($aryId), $nMaxCount);
+
+        for ($i = 0; $i < $nCount; $i++) {
+            $strIdList .= $aryId[$i];
+            if ($i < $nCount - 1) {
+                $strIdList .= ', ';
+            }
+        }
+
         // query first 10 item with id array above
         $items = Item::whereIn('id', $aryId)
             ->where('status', Item::STATUS_BID)
-            ->limit(10)
+            ->orderByRaw('FIELD(id, ' . $strIdList . ')')
+            ->limit($nMaxCount)
             ->get();
 
         return $items;

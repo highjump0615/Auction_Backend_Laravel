@@ -31,5 +31,6 @@ Route::group(['prefix'=>'api/v1'], function() {
         Route::get('/explore', 'ItemController@getExplore');
         Route::get('/category/{id}', 'ItemController@getCategory');
         Route::get('/search/{keyword}', 'ItemController@getSearch');
+        Route::get('/user', 'UserController@getUser');
     });
 });
