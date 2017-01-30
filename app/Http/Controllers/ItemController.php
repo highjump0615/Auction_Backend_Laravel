@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\Comment;
 use App\Model\Item;
 use App\Model\Bid;
 use Illuminate\Http\JsonResponse;
@@ -151,7 +152,7 @@ class ItemController extends Controller
 
         $aryParam = [
             'price'     => $request->input('price'),
-            'item_id'   => $request->input('itemId'),
+            'item_id'   => $request->input('item'),
             'user_id'   => $user->id,
         ];
 
@@ -170,5 +171,61 @@ class ItemController extends Controller
     public function getMaxBidPrice(Request $request, $id) {
         $data = array('value' => Item::find($id)->getMaxBid());
         return new JsonResponse($data);
+    }
+
+    /**
+     * add new comment
+     * @param Request $request
+     * @return Comment
+     */
+    public function addComment(Request $request) {
+        $user = $this->getCurrentUser();
+
+        $aryParam = [
+            'comment'   => $request->input('comment'),
+            'parent_id' => $request->input('parent'),
+            'user_id'   => $user->id,
+            'item_id'   => $request->input('item'),
+        ];
+
+        // create new bid
+        $commentNew = Comment::create($aryParam);
+
+        return $commentNew;
+    }
+
+    /**
+     * get all comments of the item
+     * @param Request $request
+     * @return mixed
+     */
+    public function getComment(Request $request) {
+        $itemId = $request->input('item');
+
+        // query comments
+        $comments = Comment::where('item_id', $itemId)->get();
+
+        // sort according to parent relation
+        $aryComment = array();
+
+        foreach ($comments as $cmt) {
+            if ($cmt->parent_id > 0) {
+                for ($i = 0; $i < count($aryComment); $i++) {
+                    $cmtP = $aryComment[$i];
+
+                    // insert element next to the parent comment
+                    if ($cmt->parent_id == $cmtP->id) {
+                        array_splice($aryComment, $i + 1, 0, array($cmt));
+                        break;
+                    }
+                }
+            }
+            else {
+                $aryComment[] = $cmt;
+            }
+        }
+
+
+        return $aryComment;
     }
 }

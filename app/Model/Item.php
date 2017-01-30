@@ -42,7 +42,7 @@ class Item extends Model
     ];
 
     /**
-     * Txtended attributes
+     * Extended attributes
      *
      * @var array
      */
@@ -73,7 +73,7 @@ class Item extends Model
      * @return mixed
      */
     public function getUsernameAttribute() {
-        return $this->user->name;
+        return $this->user->username;
     }
 
     /**

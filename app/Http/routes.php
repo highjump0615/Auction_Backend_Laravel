@@ -31,8 +31,16 @@ Route::group(['prefix'=>'api/v1'], function() {
         Route::get('/explore', 'ItemController@getExplore');
         Route::get('/category/{id}', 'ItemController@getCategory');
         Route::get('/search/{keyword}', 'ItemController@getSearch');
+
+        // user
         Route::get('/user', 'UserController@getUser');
+
+        // bid
         Route::post('/bid', 'ItemController@placeBid');
         Route::get('/maxbid/{id}', 'ItemController@getMaxBidPrice');
+
+        // comment
+        Route::get('/comment', 'ItemController@getComment');
+        Route::post('/addcomment', 'ItemController@addComment');
     });
 });
