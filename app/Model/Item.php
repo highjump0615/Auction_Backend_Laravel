@@ -4,6 +4,7 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use DateTime;
 
 class Item extends Model
 {
@@ -32,11 +33,23 @@ class Item extends Model
     ];
 
     /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'user',
+    ];
+
+    /**
      * Txtended attributes
      *
      * @var array
      */
-    protected $appends = [];
+    protected $appends = [
+        'username',
+        'minute_remain'
+    ];
 
     /**
      * status
@@ -46,4 +59,37 @@ class Item extends Model
     const STATUS_CLOSED = 2;
 
     const MAX_IMAGE_NUM = 3;
+
+    /**
+     * get user data of the item
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    protected function user(){
+        return $this->belongsTo('App\Model\User');
+    }
+
+    /**
+     * username
+     * @return mixed
+     */
+    public function getUsernameAttribute() {
+        return $this->user->name;
+    }
+
+    /**
+     * calculate remaining hours
+     * @return mixed
+     */
+    public function getMinuteRemainAttribute() {
+        $dateCurrent = new DateTime("now");
+        $dateEnd = new DateTime($this->end_at);
+
+        // subtract 2 times
+        $diffInterval = $dateEnd->diff($dateCurrent);
+
+        // convert DateInterval to minutes
+        $diffMin = $diffInterval->days * 1440 + $diffInterval->h * 60 + $diffInterval->i;
+
+        return $diffMin;
+    }
 }
