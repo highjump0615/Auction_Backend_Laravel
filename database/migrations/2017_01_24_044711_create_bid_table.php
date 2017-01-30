@@ -18,10 +18,11 @@ class CreateBidTable extends Migration
             $table->increments('id');
             $table->string('price');
 
-            $table->timestamps();
-
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('item_id');
+
+            $table->timestamps();
+            $table->softDeletes();
 
             // foreign key
             $table->foreign('user_id')->references('id')

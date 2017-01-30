@@ -70,6 +70,7 @@ class AuthController extends Controller
      */
     protected function createApiToken()
     {
+        // POTENTIAL BUG, are you sure it is unique?
         return str_random(60);
     }
 

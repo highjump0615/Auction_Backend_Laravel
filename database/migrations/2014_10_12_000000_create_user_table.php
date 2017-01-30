@@ -21,7 +21,7 @@ class CreateUserTable extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->rememberToken();
-            $table->string('api_token', 60)->nullable();
+            $table->string('api_token', 60)->unique();
 
             // profile info
             $table->string('photo')->nullable()->comment('profile portrait url');

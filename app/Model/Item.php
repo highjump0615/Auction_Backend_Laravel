@@ -92,4 +92,21 @@ class Item extends Model
 
         return $diffMin;
     }
+
+    /**
+     * get all bids to this item
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function bids()
+    {
+        return $this->hasMany('App\Model\Bid');
+    }
+
+    /**
+     * get max bid price to this item
+     * @return mixed
+     */
+    public function getMaxBid() {
+        return (int)$this->bids->max('price');
+    }
 }

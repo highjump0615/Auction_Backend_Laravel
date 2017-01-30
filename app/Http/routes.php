@@ -32,5 +32,7 @@ Route::group(['prefix'=>'api/v1'], function() {
         Route::get('/category/{id}', 'ItemController@getCategory');
         Route::get('/search/{keyword}', 'ItemController@getSearch');
         Route::get('/user', 'UserController@getUser');
+        Route::post('/bid', 'ItemController@placeBid');
+        Route::get('/maxbid/{id}', 'ItemController@getMaxBidPrice');
     });
 });

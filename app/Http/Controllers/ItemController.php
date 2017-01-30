@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Model\Item;
+use App\Model\Bid;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use DateTime;
 use DateInterval;
 use File;
+use Psy\Util\Json;
 
 class ItemController extends Controller
 {
@@ -137,5 +139,36 @@ class ItemController extends Controller
         $items = Item::where('title', 'like', '%' . $keyword . '%')->get();
 
         return $items;
+    }
+
+    /**
+     * place a new bid to the item
+     * @param Request $request
+     * @return mixed
+     */
+    public function placeBid(Request $request) {
+        $user = $this->getCurrentUser();
+
+        $aryParam = [
+            'price'     => $request->input('price'),
+            'item_id'   => $request->input('itemId'),
+            'user_id'   => $user->id,
+        ];
+
+        // create new bid
+        $bidNew = Bid::create($aryParam);
+
+        return $bidNew;
+    }
+
+    /**
+     * get max bid price of the item
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getMaxBidPrice(Request $request, $id) {
+        $data = array('value' => Item::find($id)->getMaxBid());
+        return new JsonResponse($data);
     }
 }
