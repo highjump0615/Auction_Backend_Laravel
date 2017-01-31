@@ -28,5 +28,22 @@ Route::group(['prefix'=>'api/v1'], function() {
     Route::group(['middleware' => ['auth:api']], function() {
         // item
         Route::post('/uploaditem', 'ItemController@upload');
+        Route::get('/explore', 'ItemController@getExplore');
+        Route::get('/category/{id}', 'ItemController@getCategory');
+        Route::get('/search/{keyword}', 'ItemController@getSearch');
+
+        // user
+        Route::get('/user', 'UserController@getUser');
+        Route::get('/userinfo', 'UserController@getUserInfo');
+        Route::post('/saveprofile', 'UserController@saveProfile');
+        Route::post('/savesetting', 'UserController@saveSetting');
+
+        // bid
+        Route::post('/bid', 'ItemController@placeBid');
+        Route::get('/maxbid/{id}', 'ItemController@getMaxBidPrice');
+
+        // comment
+        Route::get('/comment', 'ItemController@getComment');
+        Route::post('/addcomment', 'ItemController@addComment');
     });
 });

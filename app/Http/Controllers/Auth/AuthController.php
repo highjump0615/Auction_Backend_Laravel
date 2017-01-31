@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\UserController;
 use App\Model\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -70,6 +71,7 @@ class AuthController extends Controller
      */
     protected function createApiToken()
     {
+        // PTO, are you sure it is unique?
         return str_random(60);
     }
 
@@ -86,28 +88,27 @@ class AuthController extends Controller
             'username'  => $data['username'],
             'email'     => $data['email'],
             'password'  => bcrypt($data['password']),
-            'birthday'  => $data['birthday'],
-            'gender'    => $data['gender'],
             'api_token' => $this->createApiToken(),
         ];
+
+        //
+        // check existance
+        //
+        if (array_has($data, 'birthday')) {
+            $aryParam['birthday'] = $data['birthday'];
+        }
+        if (array_has($data, 'gender')) {
+            $aryParam['gender'] = $data['gender'];
+        }
 
         // if photo file exists, save file first
         if (array_has($data, 'photo')) {
             $filePhoto = $data['photo'];
 
-            // create user photo directory, if not exist
-            if (!file_exists(getUserPhotoPath())) {
-                File::makeDirectory(getUserPhotoPath(), 0777, true);
-            }
+            $userCtrl = new UserController();
 
-            // generate file name u**********.ext
-            $strName = 'u' . time() . uniqid() . '.' . $filePhoto->getClientOriginalExtension();
-
-            // move file to upload folder
-            $filePhoto->move(getUserPhotoPath(), $strName);
-
-            // add to database
-            $aryParam['photo'] = $strName;
+            // save file, add to database
+            $aryParam['photo'] = $userCtrl->savePhotofile($filePhoto);
         }
 
         return User::create($aryParam);

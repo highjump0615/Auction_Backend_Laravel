@@ -15,17 +15,19 @@ class CreateUserTable extends Migration
     public function up()
     {
         Schema::create(CreateUserTable::$tableName, function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('name');
             $table->string('username')->unique();
             $table->string('email')->unique();
             $table->string('password');
             $table->rememberToken();
-            $table->string('api_token', 60)->nullable();
+            $table->string('api_token', 60)->unique();
 
             // profile info
             $table->string('photo')->nullable()->comment('profile portrait url');
-            $table->date('birthday');
+            $table->date('birthday')->nullable();
             $table->tinyInteger('gender')->comment('1:Unknown, 2:Female, 3:Male');
 
             $table->softDeletes();

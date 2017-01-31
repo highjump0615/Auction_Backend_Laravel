@@ -15,13 +15,16 @@ class CreateBidTable extends Migration
     public function up()
     {
         Schema::create($this->tableName, function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             $table->increments('id');
             $table->string('price');
 
-            $table->timestamps();
-
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('item_id');
+
+            $table->timestamps();
+            $table->softDeletes();
 
             // foreign key
             $table->foreign('user_id')->references('id')
