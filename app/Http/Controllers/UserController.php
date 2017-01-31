@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 
 use Validator;
 use File;
+use Auth;
 
 class UserController extends Controller
 {
@@ -73,6 +74,24 @@ class UserController extends Controller
     }
 
     /**
+     * Get a validator for an incoming save setting request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validatorEmail(array $data)
+    {
+        $user = $this->getCurrentUser();
+
+        //
+        // add except current user
+        //
+        return Validator::make($data, [
+            'email' => 'required|max:255|unique:' . \CreateUserTable::$tableName . ',email,' . $user->id,
+        ]);
+    }
+
+    /**
      * save photo image file
      * @param $file
      * @return string new saved file name
@@ -127,6 +146,50 @@ class UserController extends Controller
 
             // save file
             $user->photo = $this->savePhotofile($filePhoto);
+        }
+
+        $user->save();
+
+        return $user;
+    }
+
+    /**
+     * save email & password
+     * @param Request $request
+     * @return JsonResponse|mixed
+     */
+    public function saveSetting(Request $request) {
+
+        $validator = $this->validatorEmail($request->all());
+
+        // failed validation
+        if ($validator->fails()) {
+            $error = json_decode($validator->errors());
+            return response()->json($error, softFailStatus());
+        }
+
+        $user = $this->getCurrentUser();
+
+        $user->email = $request->input('email');
+
+        //
+        // check existance
+        //
+        if ($request->has('password')) {
+            $oldpswd = $request->input('oldpassword');
+
+            $credentials = array(
+                'username' => $user->username,
+                'password' => $oldpswd,
+            );
+
+            if (!Auth::guard('web')->attempt($credentials)) {
+                // old password is not correct
+                return new JsonResponse(array('message' => 'Old password does not match'), softFailStatus());
+            }
+
+            // update password
+            $user->password = bcrypt($request->input('password'));
         }
 
         $user->save();
