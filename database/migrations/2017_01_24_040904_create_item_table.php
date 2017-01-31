@@ -15,6 +15,8 @@ class CreateItemTable extends Migration
     public function up()
     {
         Schema::create(CreateItemTable::$tableName, function (Blueprint $table) {
+            $table->engine = 'InnoDB';
+
             // general info
             $table->increments('id');
             $table->string('title');
