@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Auth\AuthController;
 use App\Model\Bid;
 use App\Model\Item;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use Psy\Util\Json;
+use Validator;
+use File;
 
 class UserController extends Controller
 {
@@ -50,5 +51,86 @@ class UserController extends Controller
         );
 
         return new JsonResponse($userInfo);
+    }
+
+    /**
+     * Get a validator for an incoming save profile request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validatorProfile(array $data)
+    {
+        $user = $this->getCurrentUser();
+
+        //
+        // add except current user
+        //
+        return Validator::make($data, [
+            'name' => 'required|max:255',
+            'username' => 'required|max:255|unique:' . \CreateUserTable::$tableName . ',username,' . $user->id,
+        ]);
+    }
+
+    /**
+     * save photo image file
+     * @param $file
+     * @return string new saved file name
+     */
+    public function savePhotofile($file) {
+        // create user photo directory, if not exist
+        if (!file_exists(getUserPhotoPath())) {
+            File::makeDirectory(getUserPhotoPath(), 0777, true);
+        }
+
+        // generate file name u**********.ext
+        $strName = 'u' . time() . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        // move file to upload folder
+        $file->move(getUserPhotoPath(), $strName);
+
+        // return new file name
+        return $strName;
+    }
+
+    /**
+     * save profile
+     * @param Request $request
+     * @return JsonResponse|mixed
+     */
+    public function saveProfile(Request $request) {
+
+        $validator = $this->validatorProfile($request->all());
+
+        // failed validation
+        if ($validator->fails()) {
+            $error = json_decode($validator->errors());
+            return response()->json($error, softFailStatus());
+        }
+
+        $user = $this->getCurrentUser();
+
+        $user->name = $request->input('name');
+        $user->username = $request->input('username');
+        $user->gender = $request->input('gender');
+
+        //
+        // check existance
+        //
+        if ($request->has('birthday')) {
+            $user->birthday = $request->input('birthday');
+        }
+
+        // if photo file exists, save file first
+        if ($request->hasFile('photo')) {
+            $filePhoto = $request->file('photo');
+
+            // save file
+            $user->photo = $this->savePhotofile($filePhoto);
+        }
+
+        $user->save();
+
+        return $user;
     }
 }

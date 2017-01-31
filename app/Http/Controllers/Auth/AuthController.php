@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\UserController;
 use App\Model\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -70,7 +71,7 @@ class AuthController extends Controller
      */
     protected function createApiToken()
     {
-        // POTENTIAL BUG, are you sure it is unique?
+        // PTO, are you sure it is unique?
         return str_random(60);
     }
 
@@ -104,19 +105,10 @@ class AuthController extends Controller
         if (array_has($data, 'photo')) {
             $filePhoto = $data['photo'];
 
-            // create user photo directory, if not exist
-            if (!file_exists(getUserPhotoPath())) {
-                File::makeDirectory(getUserPhotoPath(), 0777, true);
-            }
+            $userCtrl = new UserController();
 
-            // generate file name u**********.ext
-            $strName = 'u' . time() . uniqid() . '.' . $filePhoto->getClientOriginalExtension();
-
-            // move file to upload folder
-            $filePhoto->move(getUserPhotoPath(), $strName);
-
-            // add to database
-            $aryParam['photo'] = $strName;
+            // save file, add to database
+            $aryParam['photo'] = $userCtrl->savePhotofile($filePhoto);
         }
 
         return User::create($aryParam);

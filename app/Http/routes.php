@@ -35,6 +35,7 @@ Route::group(['prefix'=>'api/v1'], function() {
         // user
         Route::get('/user', 'UserController@getUser');
         Route::get('/userinfo', 'UserController@getUserInfo');
+        Route::post('/saveprofile', 'UserController@saveProfile');
 
         // bid
         Route::post('/bid', 'ItemController@placeBid');
