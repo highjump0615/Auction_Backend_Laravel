@@ -91,6 +91,10 @@ class Item extends Model
         // convert DateInterval to minutes
         $diffMin = $diffInterval->days * 1440 + $diffInterval->h * 60 + $diffInterval->i;
 
+        if ($dateCurrent > $dateEnd) {
+            $diffMin = -$diffMin;
+        }
+
         return $diffMin;
     }
 
