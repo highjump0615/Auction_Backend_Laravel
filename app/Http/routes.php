@@ -40,7 +40,7 @@ Route::group(['prefix'=>'api/v1'], function() {
 
         // bid
         Route::post('/bid', 'ItemController@placeBid');
-        Route::get('/maxbid/{id}', 'ItemController@getMaxBidPrice');
+//        Route::get('/maxbid/{id}', 'ItemController@getMaxBidPrice');
 
         // comment
         Route::get('/comment', 'ItemController@getComment');

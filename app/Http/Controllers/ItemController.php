@@ -162,17 +162,17 @@ class ItemController extends Controller
         return $bidNew;
     }
 
-    /**
-     * get max bid price of the item
-     * @param Request $request
-     * @param $id
-     * @return mixed
-     */
-    public function getMaxBidPrice(Request $request, $id) {
-        $data = array('value' => Item::find($id)->getMaxBid());
-        return new JsonResponse($data);
-    }
-
+//    /**
+//     * get max bid price of the item
+//     * @param Request $request
+//     * @param $id
+//     * @return mixed
+//     */
+//    public function getMaxBidPrice(Request $request, $id) {
+//        $data = array('value' => Item::find($id)->getMaxBid());
+//        return new JsonResponse($data);
+//    }
+//
     /**
      * add new comment
      * @param Request $request

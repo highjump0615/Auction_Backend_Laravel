@@ -48,7 +48,8 @@ class Item extends Model
      */
     protected $appends = [
         'username',
-        'minute_remain'
+        'minute_remain',
+        'maxbid'
     ];
 
     /**
@@ -103,10 +104,12 @@ class Item extends Model
     }
 
     /**
-     * get max bid price to this item
-     * @return mixed
+     * get user id of the max bid
+     * @return int
      */
-    public function getMaxBid() {
-        return (int)$this->bids->max('price');
+    public function getMaxBidAttribute() {
+        $userId = $this->hasMany('App\Model\Bid')->orderBy('price', 'desc')->first();
+
+        return $userId;
     }
 }

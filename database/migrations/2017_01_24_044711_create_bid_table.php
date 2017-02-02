@@ -18,7 +18,7 @@ class CreateBidTable extends Migration
             $table->engine = 'InnoDB';
 
             $table->increments('id');
-            $table->string('price');
+            $table->integer('price');
 
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('item_id');
