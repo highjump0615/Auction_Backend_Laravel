@@ -112,8 +112,8 @@ class Item extends Model
      * @return int
      */
     public function getMaxBidAttribute() {
-        $userId = $this->hasMany('App\Model\Bid')->orderBy('price', 'desc')->first();
+        $users = $this->hasMany('App\Model\Bid')->orderBy('price', 'desc')->limit(3)->get();
 
-        return $userId;
+        return $users;
     }
 }

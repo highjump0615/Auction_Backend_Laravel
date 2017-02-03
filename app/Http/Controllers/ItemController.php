@@ -80,8 +80,10 @@ class ItemController extends Controller
     public function getExplore(Request $request) {
         $nMaxCount = 10;
 
+        $dateCurrent = new DateTime();
+
         // get max id of item
-        $nMaxId = Item::where('status', Item::STATUS_BID)->max('id');
+        $nMaxId = Item::where('end_at', '>', $dateCurrent)->max('id');
 
         // if no data
         if (empty($nMaxId)) {
@@ -108,7 +110,7 @@ class ItemController extends Controller
 
         // query first 10 item with id array above
         $items = Item::whereIn('id', $aryId)
-            ->where('status', Item::STATUS_BID)
+            ->where('end_at', '>', $dateCurrent)
             ->orderByRaw('FIELD(id, ' . $strIdList . ')')
             ->limit($nMaxCount)
             ->get();
@@ -162,17 +164,16 @@ class ItemController extends Controller
         return $bidNew;
     }
 
-//    /**
-//     * get max bid price of the item
-//     * @param Request $request
-//     * @param $id
-//     * @return mixed
-//     */
-//    public function getMaxBidPrice(Request $request, $id) {
-//        $data = array('value' => Item::find($id)->getMaxBid());
-//        return new JsonResponse($data);
-//    }
-//
+    /**
+     * get max bid price of the item
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function getMaxBidPrice(Request $request, $id) {
+        return Item::find($id)->maxbid;
+    }
+
     /**
      * add new comment
      * @param Request $request
