@@ -152,6 +152,8 @@ class ItemController extends Controller
     public function placeBid(Request $request) {
         $user = $this->getCurrentUser();
 
+        // todo: check bid possibility of the item using remaintime
+
         $aryParam = [
             'price'     => $request->input('price'),
             'item_id'   => $request->input('item'),
