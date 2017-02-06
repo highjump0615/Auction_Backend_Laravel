@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\TimeoutGiveupCron;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -14,6 +15,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         // Commands\Inspire::class,
+        TimeoutGiveupCron::class,
     ];
 
     /**
@@ -26,5 +28,6 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')
         //          ->hourly();
+        $schedule->command('timeout:giveup')->everyMinute()->sendOutputTo('storage/logs/cronlog.txt');
     }
 }

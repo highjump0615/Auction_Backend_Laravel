@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 
 class CreateBidTable extends Migration
 {
-    public $tableName = 'plh_bid';
+    public static $tableName = 'plh_bid';
 
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateBidTable extends Migration
      */
     public function up()
     {
-        Schema::create($this->tableName, function (Blueprint $table) {
+        Schema::create(CreateBidTable::$tableName, function (Blueprint $table) {
             $table->engine = 'InnoDB';
 
             $table->increments('id');
@@ -46,6 +46,6 @@ class CreateBidTable extends Migration
      */
     public function down()
     {
-        Schema::drop($this->tableName);
+        Schema::drop(CreateBidTable::$tableName);
     }
 }
