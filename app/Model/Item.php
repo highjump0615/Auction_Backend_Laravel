@@ -85,17 +85,7 @@ class Item extends Model
         $dateCurrent = new DateTime("now");
         $dateEnd = new DateTime($this->end_at);
 
-        // subtract 2 times
-        $diffInterval = $dateEnd->diff($dateCurrent);
-
-        // convert DateInterval to minutes
-        $diffMin = $diffInterval->days * 1440 + $diffInterval->h * 60 + $diffInterval->i;
-
-        if ($dateCurrent > $dateEnd) {
-            $diffMin = -$diffMin;
-        }
-
-        return $diffMin;
+        return dateDiffMin($dateEnd, $dateCurrent);
     }
 
     /**
@@ -111,9 +101,19 @@ class Item extends Model
      * get user id of the max bid
      * @return int
      */
-    public function getMaxBidAttribute() {
-        $users = $this->hasMany('App\Model\Bid')->orderBy('price', 'desc')->limit(3)->get();
+    public function getMaxbidAttribute() {
+        $users = $this->hasMany('App\Model\Bid')->withTrashed()->orderBy('price', 'desc')->limit(3)->get();
 
         return $users;
+    }
+
+    /**
+     * get bid of the selected user
+     * @param User $user
+     * @return mixed
+     */
+    public function getBidForUser(User $user)
+    {
+        return $this->hasMany('App\Model\Bid')->where('user_id', $user->id)->first();
     }
 }

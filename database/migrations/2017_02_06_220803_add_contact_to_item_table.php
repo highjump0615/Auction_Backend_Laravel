@@ -13,7 +13,7 @@ class AddContactToItemTable extends Migration
     public function up()
     {
         Schema::table(CreateItemTable::$tableName, function (Blueprint $table) {
-            $table->integer('contact')->comment('1:Single, 2:Both');
+            $table->integer('contact')->comment('User id who contacted first, -1: both contacted');
         });
     }
 

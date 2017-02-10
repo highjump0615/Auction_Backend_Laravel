@@ -231,4 +231,82 @@ class ItemController extends Controller
 
         return $aryComment;
     }
+
+    /**
+     * contact for item
+     * @param Request $request
+     * @return json
+     */
+    public function contact(Request $request) {
+        $user = $this->getCurrentUser();
+        $itemId = $request->input('item');
+
+        //
+        // update target item
+        //
+        $item = Item::find($itemId);
+
+        // accepting contact
+        if ($item->contact > 0) {
+            $item->contact = -1;
+
+            // todo: add inbox record
+        }
+        // first contact
+        else if ($item->contact == 0) {
+            $item->contact = $user->id;
+        }
+
+        $item->save();
+
+        return response()->json([
+            'contact' => $item->contact,
+        ]);
+    }
+
+    /**
+     * give up bid for item
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function giveupBid(Request $request) {
+        $user = $this->getCurrentUser();
+
+        $itemId = $request->input('item');
+        $item = Item::find($itemId);
+
+        // get current time
+        $dateNow = new DateTime();
+        $strDate = $dateNow->format('Y-m-d H:i:s');
+
+        //
+        // update bid data
+        //
+        $bid = $item->getBidForUser($user);
+        if ($bid) {
+            $bid->giveup_at = $strDate;
+            $bid->save();
+        }
+
+        return response()->json();
+    }
+
+    /**
+     * delete bid for item
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteBid(Request $request) {
+        $user = $this->getCurrentUser();
+        $itemId = $request->input('item');
+        $item = Item::find($itemId);
+
+        //
+        // delete bid data
+        //
+        $bid = $item->getBidForUser($user);
+        $bid->delete();
+
+        return response()->json();
+    }
 }
