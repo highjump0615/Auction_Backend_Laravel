@@ -80,8 +80,10 @@ class ItemController extends Controller
     public function getExplore(Request $request) {
         $nMaxCount = 10;
 
+        $dateCurrent = new DateTime();
+
         // get max id of item
-        $nMaxId = Item::where('status', Item::STATUS_BID)->max('id');
+        $nMaxId = Item::where('end_at', '>', $dateCurrent)->max('id');
 
         // if no data
         if (empty($nMaxId)) {
@@ -108,7 +110,7 @@ class ItemController extends Controller
 
         // query first 10 item with id array above
         $items = Item::whereIn('id', $aryId)
-            ->where('status', Item::STATUS_BID)
+            ->where('end_at', '>', $dateCurrent)
             ->orderByRaw('FIELD(id, ' . $strIdList . ')')
             ->limit($nMaxCount)
             ->get();
@@ -150,6 +152,8 @@ class ItemController extends Controller
     public function placeBid(Request $request) {
         $user = $this->getCurrentUser();
 
+        // todo: check bid possibility of the item using remaintime
+
         $aryParam = [
             'price'     => $request->input('price'),
             'item_id'   => $request->input('item'),
@@ -169,8 +173,7 @@ class ItemController extends Controller
      * @return mixed
      */
     public function getMaxBidPrice(Request $request, $id) {
-        $data = array('value' => Item::find($id)->getMaxBid());
-        return new JsonResponse($data);
+        return Item::find($id)->maxbid;
     }
 
     /**
@@ -227,5 +230,83 @@ class ItemController extends Controller
 
 
         return $aryComment;
+    }
+
+    /**
+     * contact for item
+     * @param Request $request
+     * @return json
+     */
+    public function contact(Request $request) {
+        $user = $this->getCurrentUser();
+        $itemId = $request->input('item');
+
+        //
+        // update target item
+        //
+        $item = Item::find($itemId);
+
+        // accepting contact
+        if ($item->contact > 0) {
+            $item->contact = -1;
+
+            // todo: add inbox record
+        }
+        // first contact
+        else if ($item->contact == 0) {
+            $item->contact = $user->id;
+        }
+
+        $item->save();
+
+        return response()->json([
+            'contact' => $item->contact,
+        ]);
+    }
+
+    /**
+     * give up bid for item
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function giveupBid(Request $request) {
+        $user = $this->getCurrentUser();
+
+        $itemId = $request->input('item');
+        $item = Item::find($itemId);
+
+        // get current time
+        $dateNow = new DateTime();
+        $strDate = $dateNow->format('Y-m-d H:i:s');
+
+        //
+        // update bid data
+        //
+        $bid = $item->getBidForUser($user);
+        if ($bid) {
+            $bid->giveup_at = $strDate;
+            $bid->save();
+        }
+
+        return response()->json();
+    }
+
+    /**
+     * delete bid for item
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function deleteBid(Request $request) {
+        $user = $this->getCurrentUser();
+        $itemId = $request->input('item');
+        $item = Item::find($itemId);
+
+        //
+        // delete bid data
+        //
+        $bid = $item->getBidForUser($user);
+        $bid->delete();
+
+        return response()->json();
     }
 }

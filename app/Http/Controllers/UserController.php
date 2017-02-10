@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Auth\AuthController;
 use App\Model\Bid;
 use App\Model\Item;
+use App\Model\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -19,8 +20,8 @@ class UserController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function getUser(Request $request) {
-        return $this->getCurrentUser();
+    public function getUser(Request $request, $id) {
+        return User::find($id);
     }
 
     /**
@@ -45,10 +46,14 @@ class UserController extends Controller
         // query items based on id
         $itemsBid = Item::whereIn('id', $aryId)->get();
 
+        // given up bids
+        $nGiveup = Bid::where('user_id', $user->id)->whereNotNull('giveup_at')->count();
+
         // put together
         $userInfo = array(
-            'auctions' => $itemsMine,
-            'bids' => $itemsBid,
+            'auctions'      => $itemsMine,
+            'bids'          => $itemsBid,
+            'givenup'       => $nGiveup,
         );
 
         return new JsonResponse($userInfo);
