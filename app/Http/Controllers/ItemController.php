@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Comment;
+use App\Model\Inbox;
 use App\Model\Item;
 use App\Model\Bid;
 use Illuminate\Http\JsonResponse;
@@ -191,7 +192,7 @@ class ItemController extends Controller
             'item_id'   => $request->input('item'),
         ];
 
-        // create new bid
+        // create new comment
         $commentNew = Comment::create($aryParam);
 
         return $commentNew;
@@ -250,7 +251,15 @@ class ItemController extends Controller
         if ($item->contact > 0) {
             $item->contact = -1;
 
-            // todo: add inbox record
+            // create new inbox
+            $aryInboxParm = [
+                'item_id'       => $item->id,
+                'user_id'       => $item->user->id,
+                'winner_id'     => $item->getWinnerId(),
+            ];
+
+            // create new inbox
+            Inbox::create($aryInboxParm);
         }
         // first contact
         else if ($item->contact == 0) {

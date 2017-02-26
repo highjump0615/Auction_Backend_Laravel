@@ -48,5 +48,9 @@ Route::group(['prefix'=>'api/v1'], function() {
         // comment
         Route::get('/comment', 'ItemController@getComment');
         Route::post('/addcomment', 'ItemController@addComment');
+
+        // inbox
+        Route::get('/inbox', 'InboxController@getInbox');
+        Route::post('/deleteinbox', 'InboxController@deleteInbox');
     });
 });

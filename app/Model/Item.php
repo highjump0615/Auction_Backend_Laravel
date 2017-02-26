@@ -102,9 +102,9 @@ class Item extends Model
      * @return int
      */
     public function getMaxbidAttribute() {
-        $users = $this->hasMany('App\Model\Bid')->withTrashed()->orderBy('price', 'desc')->limit(3)->get();
+        $bids = $this->hasMany('App\Model\Bid')->withTrashed()->orderBy('price', 'desc')->limit(3)->get();
 
-        return $users;
+        return $bids;
     }
 
     /**
@@ -115,5 +115,31 @@ class Item extends Model
     public function getBidForUser(User $user)
     {
         return $this->hasMany('App\Model\Bid')->where('user_id', $user->id)->first();
+    }
+
+    /**
+     * get winner user id
+     * @return int
+     */
+    public function getWinnerId() {
+        $winnerId = 0;
+
+        // get max bid
+        foreach ($this->maxbid as $bid) {
+            // skip givenup bids
+            if ($bid->giveup_at) {
+                continue;
+            }
+
+            // skip deleted bids
+            if ($bid->trashed()) {
+                continue;
+            }
+
+            $winnerId = $bid->user_id;
+            break;
+        }
+
+        return $winnerId;
     }
 }
