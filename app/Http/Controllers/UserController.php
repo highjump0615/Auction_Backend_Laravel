@@ -35,6 +35,17 @@ class UserController extends Controller
         // query items of the user
         $itemsMine = Item::where('user_id', $user->id)->get();
 
+        //
+        // average rate
+        //
+        $rateTotal = 0;
+        if (count($itemsMine) > 0) {
+            foreach ($itemsMine as $item) {
+                $rateTotal += $item->rate;
+            }
+            $rateTotal = (double)$rateTotal / count($itemsMine);
+        }
+
         // get items user has bid
         $itemIdsBid = Bid::where('user_id', $user->id)->distinct()->get(['item_id']);
 
@@ -54,6 +65,7 @@ class UserController extends Controller
             'auctions'      => $itemsMine,
             'bids'          => $itemsBid,
             'givenup'       => $nGiveup,
+            'rate'          => $rateTotal,
         );
 
         return new JsonResponse($userInfo);
