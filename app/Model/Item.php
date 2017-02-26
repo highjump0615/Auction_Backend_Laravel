@@ -38,7 +38,6 @@ class Item extends Model
      * @var array
      */
     protected $hidden = [
-        'user',
     ];
 
     /**
@@ -47,7 +46,7 @@ class Item extends Model
      * @var array
      */
     protected $appends = [
-        'username',
+        'userdata',
         'minute_remain',
         'maxbid'
     ];
@@ -70,11 +69,11 @@ class Item extends Model
     }
 
     /**
-     * username
+     * get user data of the item
      * @return mixed
      */
-    public function getUsernameAttribute() {
-        return $this->user->username;
+    public function getUserdataAttribute() {
+        return $this->user;
     }
 
     /**

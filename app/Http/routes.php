@@ -52,5 +52,8 @@ Route::group(['prefix'=>'api/v1'], function() {
         // inbox
         Route::get('/inbox', 'InboxController@getInbox');
         Route::post('/deleteinbox', 'InboxController@deleteInbox');
+
+        // rate
+        Route::post('/rate', 'ItemController@setRate');
     });
 });

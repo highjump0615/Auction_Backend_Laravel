@@ -318,4 +318,19 @@ class ItemController extends Controller
 
         return response()->json();
     }
+
+    /**
+     * set rate for item
+     * @param Request $request
+     */
+    public function setRate(Request $request) {
+
+        $itemId = $request->input('item');
+        $rate = $request->input('rate');
+
+        $item = Item::find($itemId);
+
+        $item->rate = $rate;
+        $item->save();
+    }
 }
