@@ -23,5 +23,6 @@ Customize artisan command
 Setting Accept as application/json in header makes effect.
 
 ## Need to Improve
+- Add logic for push notification
 - Integrate chat feature  
 ... ...
