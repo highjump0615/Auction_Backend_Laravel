@@ -1,7 +1,7 @@
 Auction Backend API, Laravel
 ======
 
-> Auction and bidding for redundant goods, backend for iOS app.
+> Auction and bidding for redundant goods, backend for [iOS app](https://github.com/highjump0615/Auction_iOS).
 
 ## Overview
 
